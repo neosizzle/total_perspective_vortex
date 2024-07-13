@@ -1,13 +1,17 @@
-import mne
-from mne.datasets import eegbci
+from sklearn.datasets import load_iris
 
-def main():
-	edf_raw = mne.io.read_raw_edf("/home/nszl/42cursus/total_perspective_vortex/dataset/physionet.org/files/eegmmidb/1.0.0/S100/S100R01.edf")	
-	edf_raw_2 = mne.io.read_raw_edf("/home/nszl/42cursus/total_perspective_vortex/dataset/physionet.org/files/eegmmidb/1.0.0/S102/S102R01.edf")	
-	print(f"{edf_raw}")
-	print(f"{edf_raw_2}")
-	# fig = edf_raw.compute_psd(fmax=70).plot()
-	fig = edf_raw_2.plot(n_channels=2, duration=50)
-	# fig = edf_raw.compute_psd(fmax=50).plot(picks="data", exclude="bads", amplitude=False)
-	fig.savefig("test.svg")
-main()
+data = load_iris(as_frame=True)
+target = data.target # need to generate this?
+frame = data.frame
+
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+frame = scaler.fit_transform(frame) 
+
+
+from sklearn.model_selection import train_test_split
+data_train, target_train, data_test, target_test = train_test_split(frame, target, test_size=0.3, random_state=1)
+
+print(data_train)
+
+# print("Accuracy:", metrics.accuracy_score(target_test, pred))
