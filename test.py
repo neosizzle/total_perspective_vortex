@@ -1,26 +1,63 @@
-from sklearn.datasets import load_iris
-import pandas as pd
 
-frame = pd.read_csv('data.csv')
-target = pd.Series(frame['condition'].values)
-frame = frame.drop(["condition", "Unnamed: 0"], axis=1)
-print(frame.info())
+import matplotlib.pyplot as plt
 
-# data = load_iris(as_frame=True)
-# target = data.target # need to generate this?
-# frame = data.frame
-# print(target)
+# unused but required import for doing 3d projections with matplotlib < 3.2
+import mpl_toolkits.mplot3d  # noqa: F401
+import numpy as np
 
-from sklearn.preprocessing import StandardScaler
-from sklearn.neural_network  import MLPClassifier
-from sklearn.pipeline import Pipeline
-pipeline = Pipeline([
-    ('scaler', StandardScaler()),
-	('classifier', MLPClassifier(max_iter=1000, random_state=69, verbose=True))
-])
+from sklearn import datasets, decomposition
 
-from sklearn.model_selection import train_test_split
-train_data, test_data, train_target, test_target = train_test_split(frame, target, test_size=0.4, random_state=1)
+class FtPca:
+	def __init__(self, n_components = 2):
+		self.n_components = n_components
 
-pipeline.fit(train_data, train_target)
-print("Accuracy:", pipeline.score(test_data, test_target))
+	def fit(self, data):
+		# generate covariance matrix
+		cov_matrix = np.cov(data, rowvar=False)
+
+		# calculate eigenvector and eigenvalue pairs for the covarience matrix above
+		eigens = np.linalg.eig(cov_matrix)
+
+		# sort and keep components based on n_componenets
+		e_values = eigens.eigenvalues
+		e_vectors = eigens.eigenvectors
+		e_val_map = []
+		for idx, val in enumerate(e_values):
+			e_val_map.append({
+				"og_idx": idx,
+				"val": val
+			})
+		sorted_e_values = sorted(e_val_map, key=lambda x: x['val'], reverse=True)
+		kept_e_values = list(map(lambda x: x['og_idx'], sorted_e_values[:self.n_components]))
+		kept_e_vectors = e_vectors[:, kept_e_values]
+
+		# project
+		self.feature_matrix = kept_e_vectors
+	
+	def transform(self, data):
+		return np.dot(self.feature_matrix.T , data.T ).T
+	
+np.random.seed(5)
+
+iris = datasets.load_iris()
+X = iris.data
+y = iris.target
+
+plt.style.use('_mpl-gallery')
+fig, ax = plt.subplots(1, 1, figsize=(4, 4))
+plt.tight_layout(pad=3)
+
+ft_pca = FtPca(n_components=2)
+ft_pca.fit(X)
+ft_X = ft_pca.transform(X)
+
+pca = decomposition.PCA(n_components=2)
+pca.fit(X)
+X = pca.transform(X)
+# print(ft_X)
+print("===========")
+# print(X)
+
+ax.scatter(X.T[0], X.T[1], c=y)
+
+plt.savefig("test.png")

@@ -9,6 +9,7 @@ import ft_pipeline
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split, RandomizedSearchCV
 from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
 from sklearn.pipeline import Pipeline
 from sklearn.neural_network  import MLPClassifier
 
@@ -24,9 +25,9 @@ def create_pipeline(verbose=True):
 		"momentum": (0.1, 0.2, 0.3, 0.4, 0.5)
 	}
 
-	# this uses crpss_val_score under the hood
+	# this uses cross_val_score under the hood
 	classifier = RandomizedSearchCV(
-		estimator=MLPClassifier(max_iter=10, random_state=69, verbose=verbose),
+		estimator=MLPClassifier(max_iter=1000, random_state=69, verbose=verbose),
 		param_distributions=parameter_grid,
 		random_state=42,
 		n_jobs=4,
@@ -36,8 +37,10 @@ def create_pipeline(verbose=True):
 	return Pipeline([
 		('cleaner', ft_pipeline.CleanFeatures()),
 		('scaler', ft_pipeline.FtStandardScaler()),
-		('classifier', classifier)
 		# ('scaler', StandardScaler()),
+		('decomposer', ft_pipeline.FtPca(n_components=40)),
+		# ('decomposer', PCA(n_components=40)),
+		('classifier', classifier)
 	])
 
 def get_args():
