@@ -2,3 +2,4 @@ datasets
 env
 .secret
 __pycache__
+data.csv
