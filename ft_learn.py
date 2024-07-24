@@ -57,7 +57,7 @@ def main():
 	args = get_args()
 	verbose = args.verbose
 
-	frame = pd.read_csv('data.csv')
+	frame = pd.read_csv(args.data)
 	target = pd.Series(frame['condition'].values)
 
 	treatment_pipeline = create_pipeline(verbose)

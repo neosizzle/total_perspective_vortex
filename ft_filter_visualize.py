@@ -17,8 +17,10 @@ def get_args():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-v', '--verbose', action='store_true')
 	parser.add_argument('-n', '--subjects', help="Speficy number of subjects to load data from", type=int, default=1)
+	parser.add_argument('-i', '--init_subject', help="Speficy the first subject number to start loading from", type=int, default=1)
 	parser.add_argument('-a', '--action', help="Speficy type of action dataset to load", type=str, default='hands_feet', choices=['hands_feet', 'left_right'])
 	parser.add_argument('-d', '--diagram',  help="Generate diagrams for all filtering steps", action='store_true')
+	parser.add_argument('-o', '--output',  help="Path to store preprocessed data",  type=str, default="data.csv") 
 	return parser.parse_args()
 
 # Run artifact correction with ICA analysis and filtering
@@ -173,7 +175,7 @@ def main():
 
 	enable_diagram = args.diagram
 	mne.set_config('MNE_BROWSE_RAW_SIZE', '25,15')
-	subject_ids = list(range(1, args.subjects + 1))
+	subject_ids = list(range(args.init_subject, args.subjects + args.init_subject))
 	sensors = get_sensors()
 	action = constants.RUN_IMAGINE_HANDS_FEET if args.action == "hands_feet" else constants.RUN_IMAGINE_LEFT_RIGHT
 	
@@ -196,6 +198,6 @@ def main():
 			all_data = pd.concat([all_data, df])
 	
 	print(f"df {all_data}")
-	all_data.to_csv('data.csv')
+	all_data.to_csv(args.output)
 
 main()
