@@ -166,6 +166,7 @@ def apply_ica_and_epoch(ica, raw_filt, action, idx, enable):
                 )
 	epochs_clean, reject_log_clean = ar.fit_transform(epochs_postica, return_log=True)
 	ft_plotter.plot_for(8, enable, [epochs, epochs_clean, tmax, action, idx])
+	ft_plotter.plot_for(9, enable, [epochs_clean, idx])
 
 	return epochs_clean
 

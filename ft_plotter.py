@@ -26,6 +26,12 @@ def plot_for(id, enable, data=None):
 			fig.savefig(title)
 			plt.close(fig)
 
+			title = f'diagrams/filtered_wavelet_{idx}.png'
+			logging.info(f"Plotting for {title}")
+			fig = filtered_edg.compute_tfr(method="morlet", freqs=list(range(20, 30)), tmin=0.0, tmax=1.0).plot_joint()
+			fig.savefig(title)
+			plt.close(fig)
+
 		case 3:
 			reject_log = data[0]
 			idx = data[1]
@@ -142,6 +148,21 @@ def plot_for(id, enable, data=None):
 			title = f'diagrams/{event_mapping[3].replace("/", "_")}_topmap_{idx}.png'
 			logging.info(f"Plotting for {title}")
 			fig = epochs_clean[event_mapping[3]].average().plot_topomap(times=times, average=0.050)
+			fig.savefig(title)
+			plt.close(fig)
+
+		case 9:
+			filtered_edg = data[0]
+			idx = data[1]
+			title = f'diagrams/final_psd_{idx}.png'
+			logging.info(f"Plotting for {title}")
+			fig = filtered_edg.compute_psd(fmax=80).plot(picks="data", exclude="bads", amplitude=False)
+			fig.savefig(title)
+			plt.close(fig)
+
+			title = f'diagrams/final_wavelet_{idx}.png'
+			logging.info(f"Plotting for {title}")
+			fig = filtered_edg.compute_tfr(method="morlet", freqs=list(range(20, 30))).average().plot_joint()
 			fig.savefig(title)
 			plt.close(fig)
 
