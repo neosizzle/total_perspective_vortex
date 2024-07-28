@@ -1,6 +1,17 @@
 # /dev/log for total_perspetive_vortex 
 This project is about creating a full machine learning pipeline that trains and predicts brain activity using EEG data.
 
+# Usage
+Download a sample dataset and run filter processes while generating diagrams. This will create `data.csv` 
+```
+python3 ft_filter_visualize.py -d
+```
+
+Train and predict model using `data.csv` as default input file path
+```
+python3 ft_learn.py -v
+```
+
 # EEG
 > https://neuraldatascience.io/7-eeg/time_freq.html
 > 
